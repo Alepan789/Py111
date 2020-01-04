@@ -3,6 +3,7 @@ My little Stack
 """
 from typing import Any
 
+# пустой "стек" в виде списка
 stack = []
 
 
