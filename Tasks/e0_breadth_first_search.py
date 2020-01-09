@@ -16,11 +16,13 @@ def bfs(g: nx.Graph, start_node: Hashable) -> List[Hashable]:
 	i = 0
 	while True and i < 10:
 		for n in g.neighbors(start_node):
-			if n not in vnext:
+			if n not in vnext and n not in vrez:
 				vnext.append(n)
+				vrez.append(n)
 				start_node = n
-			# elif n in vrez and n in  :
-			#
+			elif n in vrez:
+				vrez.append(n)
+				start_node = n
 		print(f'i:{i} n:{n}')
 		i += 1
 	print(vnext)
