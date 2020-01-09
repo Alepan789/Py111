@@ -8,3 +8,5 @@ def calculate_paths(shape: (int, int), point: (int, int)) -> int:
 	"""
 	print(shape, point)
 	return 0
+
+
