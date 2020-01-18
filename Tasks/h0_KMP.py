@@ -31,12 +31,13 @@ def kmp_algo(inp_string: str, substr: str) -> Optional[int]:
 				j += 1
 			res.append(_index)
 		return res
+	# end prefix_fun()
 
-	# паттерн "переходов"
+	# паттерн "переходов" заполняем
 	pattern = prefix_fun(substr)
 
-	i, j = 0, 0
-	while i < len(inp_string):
+	j = 0
+	for i in range(len(inp_string)):
 		# print(f'i:{i} j:{j}  p1:{inp_string[i]} p2:{substr[j]} ')
 		if inp_string[i] == substr[j]:
 			i += 1
@@ -49,10 +50,9 @@ def kmp_algo(inp_string: str, substr: str) -> Optional[int]:
 		else:
 			j = pattern[j - 1]
 
-	print(f'не найдено  str1:{inp_string}  substring:{substr}')
-
-
-# return None
+	print(f'не найдено;  str1: {inp_string}  substring: {substr}')
+	# end kmp_algo()
+	# return None
 
 
 str_1 = 'qweAAAqweй'
@@ -65,10 +65,11 @@ str_2 = 'qwer'
 # str_2 = 'ATAATA'
 # f = [0, 0, 1, 1, 2, 3]
 
-print(kmp_algo(str_1, str_2))
+print(kmp_algo(str_1, str_2), '\n')
 
 haystack = "Hello, tiny world!"
 needle = "Hell"
+needle = 'tiny'
 #
 # # haystack = "All these moments will be lost in time..."
 # # needle = "time..."
