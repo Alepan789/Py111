@@ -22,7 +22,7 @@ def kmp_algo(inp_string: str, substr: str) -> Optional[int]:
 		for i in range(2, len(prefix_str) + 1):
 			_index = 0
 			patt = prefix_str[0:i]
-			for j in range(1, len(patt) - 1):
+			for j in range(1, len(patt)):
 				pref = patt[:j]
 				suff = patt[-j:]
 				if pref == suff:
@@ -35,7 +35,9 @@ def kmp_algo(inp_string: str, substr: str) -> Optional[int]:
 
 	# паттерн "переходов" заполняем
 	pattern = prefix_fun(substr)
+	print(f'pattern:{pattern}')
 
+	i = 0
 	j = 0
 	for i in range(len(inp_string)):
 		# print(f'i:{i} j:{j}  p1:{inp_string[i]} p2:{substr[j]} ')
@@ -43,7 +45,7 @@ def kmp_algo(inp_string: str, substr: str) -> Optional[int]:
 			i += 1
 			j += 1
 			if j == len(substr):
-				print(f'Результат: {i - len(substr)};  str1:{inp_string}  substring:{substr}')
+				print(f'Результат: {i - len(substr)};  str1:{inp_string}  \nsubstring:->{substr}<- len:{len(inp_string)}')
 				return i - len(substr)
 		elif j <= 0:
 			i += 1
@@ -59,6 +61,11 @@ str_1 = 'qweAAAqweй'
 str_2 = 'qwer'
 # str_2 = 'ababc'
 
+str_1 = 'ABCDMXYT ABABzCDAB aa'
+str_2 = 'ABABC'
+
+str_2 = 'aa'
+
 # str_2 = 'ATATC'
 # Итог: f = [0, 0, 1, 2, 0]
 
@@ -67,12 +74,20 @@ str_2 = 'qwer'
 
 print(kmp_algo(str_1, str_2), '\n')
 
-haystack = "Hello, tiny world!"
+haystack = "Hello, tiny world!aa"
 needle = "Hell"
-needle = 'tiny'
+# needle = 'aa'
 #
 # # haystack = "All these moments will be lost in time..."
 # # needle = "time..."
 # # 34
 # # haystack.index(needle)
-print(kmp_algo(haystack, needle))
+print(f'Индекс результат: {kmp_algo(haystack, needle)}\n')
+
+# str_1 ='Определение: префикс функция – такая функция F(j), что возвращает число, равное максимальной длине префикса строки P[0, j], совпадающего с суффиксом строки '
+# # str_2 = 'что'
+# # print(kmp_algo(str_1, str_2), '\n')
+# # print(str_1.split())
+#
+# for i in str_1.split():
+# 	print(kmp_algo(str_1, i))
