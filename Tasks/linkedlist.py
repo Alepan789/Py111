@@ -18,16 +18,14 @@ class JSONFileDriver(IStuctureDriver):
 
 
     def write(self, dct):
-        print(dct)
         with open(self._filename, "w") as fp:
-            json.dump(fp, dct)
+            json.dump(dct, fp)
 
 
-    # def read(self):
-    #     with open(self._filename, "r") as file:
-    #         dct = json.load()
-    #     print(f'load_json: {dct}; file:{self._filename}')
-    #     return dct
+    def read(self):
+        with open(self._filename, "r") as fp:
+            dct = json.load(fp)
+        return dct
 
 
 
@@ -139,15 +137,38 @@ class LinkedList:
         load_dict = {}
         if isinstance(self.__structure_driver, IStuctureDriver):
             load_dict = self.__structure_driver.read()
-            print(f' load_1: {load_dict} driver:  {self.__structure_driver} jsonFile:{self.__structure_driver._filename}')
         else:
             raise TypeError('Err "structure_driver" must be IStuctureDriver')
-        print(f'res load_2: {load_dict}')
+
+
         # self.clear -- метод очистки должен быть реализован
         self.tail = None
         self.head = None
         self.size = 0
-        # current_node =
+
+        # i = 0
+        # while True:
+        #     if len(load_dict) == i:
+        #         return
+        #     print(load_dict[i]['prev'])
+        #     i += 1
+        i = 0
+        for node in load_dict.items():
+            if node[1]['prev'] == None:
+                current_node = node
+                print(f'i:  {i} \tnode : {node}')
+                break
+            i += 1
+            # print(f'i:  {i} \tnode : {node}l curr:{current_node}')
+
+        self.append(current_node[data])
+        while True:
+            current_node = load_dict[]
+            проходим последовательно
+
+
+
+        print(f'res load_2: {load_dict}; ')
 
 
 
@@ -179,9 +200,9 @@ ll.append("Bar")
 #     i += 1
 #
 ll.set_structure_driver(JSONFileDriver('PU200json.txt'))
-print(ll.save())
+# print(ll.save())
 
-# ll.load()
+ll.load()
 
 
 """
