@@ -1,4 +1,5 @@
 from weakref import ref
+import json
 
 class IStuctureDriver:
 
@@ -17,8 +18,16 @@ class JSONFileDriver(IStuctureDriver):
 
 
     def write(self, dct):
-        with open(self._filename, "w") as file:
-            file.write(str(dct))
+        print(dct)
+        with open(self._filename, "w") as fp:
+            json.dump(fp, dct)
+
+
+    # def read(self):
+    #     with open(self._filename, "r") as file:
+    #         dct = json.load()
+    #     print(f'load_json: {dct}; file:{self._filename}')
+    #     return dct
 
 
 
@@ -127,7 +136,19 @@ class LinkedList:
 
 
     def load(self):
-        ...
+        load_dict = {}
+        if isinstance(self.__structure_driver, IStuctureDriver):
+            load_dict = self.__structure_driver.read()
+            print(f' load_1: {load_dict} driver:  {self.__structure_driver} jsonFile:{self.__structure_driver._filename}')
+        else:
+            raise TypeError('Err "structure_driver" must be IStuctureDriver')
+        print(f'res load_2: {load_dict}')
+        # self.clear -- метод очистки должен быть реализован
+        self.tail = None
+        self.head = None
+        self.size = 0
+        # current_node =
+
 
 
 
@@ -149,16 +170,18 @@ ll.append("Python")
 ll.append("Foo")
 ll.append("Bar")
 
-
-i = 0
-current_node: Node = ll.head
-while i < ll.size:
-    print(f'id:{id(current_node)},  data:{current_node.data},  \tprev:{current_node.prev_node};  \t\tnext:{current_node.next_node}')
-    current_node = current_node.next_node
-    i += 1
-
+#
+# i = 0
+# current_node: Node = ll.head
+# while i < ll.size:
+#     print(f'id:{id(current_node)},  data:{current_node.data},  \tprev:{current_node.prev_node};  \t\tnext:{current_node.next_node}')
+#     current_node = current_node.next_node
+#     i += 1
+#
 ll.set_structure_driver(JSONFileDriver('PU200json.txt'))
 print(ll.save())
+
+# ll.load()
 
 
 """
