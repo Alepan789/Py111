@@ -78,17 +78,17 @@ class FigureHW(Figure):
         self._h = h
         self._w = w
 
-        def width(self):
-            return self._w
+    def width(self):
+        return self._w
 
-        def height(self):
-            return self._h
+    def height(self):
+        return self._h
 
-        def get_square(self):
-            raise NotImplementedError
+    def get_square(self):
+        raise NotImplementedError
 
-        def get_perimetr(self):
-            raise NotImplementedError
+    def get_perimetr(self):
+        raise NotImplementedError
 
 
 class Rectangle(FigureHW):
