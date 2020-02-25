@@ -117,28 +117,21 @@ class Ellipse(FigureHW):
 
 class CloseFigure(Figure):
     def __init__(self, *points):
-        assert  len(points) >= 3
+        assert len(points) >= 3
         super().__init__(points[0]['x'], points[0]['y'])
-        # self._x = iter(args[0]['x'])
-        # self._y = iter(args[0]['y'])
-        # self._x = []
-        # self._y = []
-        # for i in args:
-        #     self._x.append(i['x'])
-        #     self._y.append(i['y'])
         self._points = points
-        print(f'x init:{self._x} y init:{self._y}')
-
+        # print(f'x init:{self._x} y init:{self._y}')
 
     def __iter__(self):
         return iter(self._points)
 
-    # def x(self):
-    #     print(f'x :{self._x} y :{self._y}')
-    #     return self._x
-    #
-    # def y(self):
-    #     return self._y
+    def get_perimetr(self):
+        return None
+        # raise NotImplementedError
+
+    def get_square(self):
+        return None
+        # raise NotImplementedError
 
 
 if __name__ == '__main__':
@@ -147,18 +140,18 @@ if __name__ == '__main__':
 
     # Создайте список фигур
 
-    rectange_1 = Rectangle(10, 10, 50, 30)
-    rectange_2 = Rectangle(50, 110, 20, 80)
+    fig1 = Rectangle(10, 10, 50, 30)
+    fig2 = Rectangle(50, 110, 20, 80)
     fig3 = Ellipse(110, 200, 80, 190)
 
-    fig4 = CloseFigure({'x': 500, 'y': 500}, {'x': 510, 'y': 510}, {'x': 580, 'y': 530})
+    fig4 = CloseFigure({'x': 110, 'y': 100}, {'x': 150, 'y': 50}, {'x': 350, 'y': 100})
 
-    fig4 = None
+    # fig4 = None
 
-    figures = [rectange_1, rectange_2, fig3, fig4]
+    figures = [fig1, fig2, fig3, fig4]
 
-    # for i in figures:
-    #     print(f'{i} \t{i.get_perimetr()} \t{i.get_square()}')
+    for i in figures:
+        print(f'{i} \t{i.get_perimetr()} \t{i.get_square()}')
 
     figure_widget.set_figures(figures)
 
