@@ -14,6 +14,7 @@
 # 1. Создайте класс Glass с атрибутами capacity_volume и occupied_volume
 #    Обязательно проверяйте типы (TypeError) и значения переменных (ValueError)
 
+import weakref as ref
 
 class Glass:
     def __init__(self, capacity_volume, occupied_volume):
@@ -323,6 +324,7 @@ d.print_me(d())
 #         self.a = a;
 
 # Объясните так реализовывать __init__ нельзя?
+# нельзя, после raise происходит выход и присвоения не происходит
 
 class A:
     def __init__(self, a):
@@ -338,9 +340,10 @@ class A:
 # 
 
 class Node:
-    def __init__(self, prev=None, next_=None):
+    def __init__(self, prev=None, next_=None, data=None):
         self.__prev = prev
         self.__next = next_
+        self.data = data
 
     def set_next(self, next_):
         self.__next = next_
@@ -349,15 +352,17 @@ class Node:
         self.__prev = prev
 
     def __str__(self):
-        return f'Node; prev:{self.__prev} next:{self.__next})'
+        return f'Node; prev:{self.__prev} next:{self.__next} data:{self.data})'
 
     def __repr__(self):
-        return f'Node({self.__prev}, {self.__next})'
+        return f'Node({self.__prev}, {self.__next}, {self.data})'
 
 
 class LinkedList:
     def __init__(self):
-        self.__lst = []
+        self.size = 0
+        self.head = None
+        self.tail = None
 
 
     def insert(self, node, index=0):
@@ -369,14 +374,17 @@ class LinkedList:
         # node.set_prev()
         # node.set_next()
 
+
+
     def append(self, node):
         '''
         Append Node to tail of LinkedList
         node - Node
         '''
-        node.set_next(0)
-        node.set_prev(-1)
-        self.__lst.append(node)
+        node.set_prev(id(self.tail))
+        self.tail=id(node)
+        node.set_next(None)
+        self.size += 1
         print(f'append:\tlist:{self}\t{node}')
 
     def clear(self):
@@ -384,6 +392,9 @@ class LinkedList:
         Clear LinkedList
         '''
         ...
+        self.tail = None
+        self.head = None
+        self.size = 0
 
     def find(self, node):
         ...

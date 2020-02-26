@@ -31,15 +31,12 @@ class JSONFileDriver(IStuctureDriver):
 
 class Node:
     def __init__(self, prev_node=None, next_node=None, data=None):
-
         if prev_node is not None and not isinstance(prev_node, type(self)):
             raise TypeError('prev_node must be Node or None')
-
         if next_node is not None and not isinstance(next_node, type(self)):
             raise TypeError('next_node must be Node or None')
-
         self.prev_node_ = ref(prev_node) if prev_node is not None else None
-        self.next_node_ = next_node
+        self.next_node_ = next_node if next_node is not None else None
         self.data = data
 
     @property
@@ -72,24 +69,26 @@ class LinkedList:
         self.__structure_driver = None
 
         
-    def insert_next_node(self, current_node, data):        
-        new_node = Node(current_node, current_node.next_node, data)
-        current_node.next_node.prev_node = new_node
-        current_node.next_node = new_node
-        self.size += 1
+    # def insert_next_node(self, current_node, data):
+    #     new_node = Node(current_node, current_node.next_node, data)
+    #     current_node.next_node.prev_node = ref(new_node)
+    #     current_node.next_node = new_node
+    #     self.size += 1
         
     def insert_node(self, index, data):
         if not isinstance(index, int):
-            raise TypeError('index must be int')        
-        
-        if index >= 0:    
-            if not 0 <= index < self.size:
-                raise ValueError('Invalid index')
-            current_node = self.head.next_node
-            for _ in range(self.size):
-                current_node = current_node.next_node
-                
-            self.insert_next_node(current_node, data)
+            raise TypeError('index must be int')
+        if not 0 <= index < self.size:
+            raise ValueError('Invalid index')
+        _current_node = self.head
+        i = 0
+        while i < index:
+            _current_node = _current_node.next_node
+            i += 1
+        self.size += 1
+        _current_node.prev_node.next_node = Node(_current_node.prev_node,_current_node.next_node, data)
+        _current_node.next_node.prev_node = ref(_current_node.prev_node.next_node)
+
 
     def append(self, data):
         new_node = Node(data=data)
@@ -99,12 +98,34 @@ class LinkedList:
             self.size += 1
         else:
             self.tail.next_node = new_node
-            new_node.prev_node = self.tail
+            new_node.prev_node = ref(self.tail)
             self.tail = new_node
             self.size += 1
 
-    # def get(self, index=0):
-    #     return self.
+
+    def find(self, node):
+        _current_node: Node = ll.head
+        i = 0
+        while i < self.size:
+            if _current_node == node:
+                return i
+            _current_node = _current_node.next_node
+            i += 1
+
+    def remove(self, node):
+        ...
+
+    def delete(self, index):
+        _current_node: Node = ll.head
+        i = 0
+        if index > self.size:
+            raise IndexError('index more then len')
+        while i < index:
+            _current_node = _current_node.next_node
+            i += 1
+        _current_node.next_node.prev_node = ref(_current_node.prev_node)
+        _current_node.prev_node.next_node = _current_node.next_node
+
 
     def set_structure_driver(self, stucture_driver):
         self.__structure_driver = stucture_driver
@@ -131,7 +152,10 @@ class LinkedList:
             raise TypeError('Err "structure_driver" must be IStuctureDriver')
 
 
-
+    def clean(self):
+        self.tail = None
+        self.head = None
+        self.size = 0
 
     def load(self):
         load_dict = {}
@@ -140,11 +164,8 @@ class LinkedList:
         else:
             raise TypeError('Err "structure_driver" must be IStuctureDriver')
 
+        self.clear #метод очистки должен быть реализован
 
-        # self.clear -- метод очистки должен быть реализован
-        self.tail = None
-        self.head = None
-        self.size = 0
 
         # i = 0
         # while True:
