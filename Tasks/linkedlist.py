@@ -1,13 +1,19 @@
 from weakref import ref
 import json
 
+
+"""
+Лабораторная работа № 3 (4 ак.ч.)
+февраль 2020
+Пантелеев А.В.
+"""
 class IStuctureDriver:
 
 
     def read(self):
         ...
 
-    def write(self):
+    def write(self, dct):
         ...
 
 
@@ -31,13 +37,19 @@ class JSONFileDriver(IStuctureDriver):
 
 class Node:
     def __init__(self, prev_node=None, next_node=None, data=None):
-        if prev_node is not None and not isinstance(prev_node, type(self)):
-            raise TypeError('prev_node must be Node or None')
-        if next_node is not None and not isinstance(next_node, type(self)):
-            raise TypeError('next_node must be Node or None')
-        self.prev_node_ = ref(prev_node) if prev_node is not None else None
-        self.next_node_ = next_node if next_node is not None else None
+        self.prev_node = prev_node
+        self.next_node = next_node
         self.data = data
+        # print(f'init Node:{self.prev_node}')
+
+    def __eq__(self, other):
+        if not isinstance(other, (Node, type(self.data))):
+            return NotImplemented
+
+        if isinstance(other, type(self.data)):
+            return self.data == other
+
+        return self.data == other.data
 
     @property
     def prev_node(self):
@@ -46,7 +58,7 @@ class Node:
     @prev_node.setter
     def prev_node(self, value):
         if value is not None and not isinstance(value, type(self)):
-            raise TypeError('Value must be Node or None')
+            raise TypeError('next_node must be Node or None')
         self.prev_node_ = ref(value) if value is not None else None
 
     @property
@@ -68,7 +80,6 @@ class LinkedList:
         self.tail = None
         self.__structure_driver = None
 
-        
     # def insert_next_node(self, current_node, data):
     #     new_node = Node(current_node, current_node.next_node, data)
     #     current_node.next_node.prev_node = ref(new_node)
@@ -78,32 +89,48 @@ class LinkedList:
     def insert_node(self, index, data):
         if not isinstance(index, int):
             raise TypeError('index must be int')
-        if not 0 <= index < self.size:
+        if not 0 <= index <= self.size - 1:
             raise ValueError('Invalid index')
-        _current_node = self.head
         i = 0
+        current_node = self.head
         while i < index:
-            _current_node = _current_node.next_node
+            current_node = current_node.next_node
             i += 1
+
+        if index == 0:
+            new_node = Node(None, self.head, data)
+            self.head.prev_node = new_node
+            print(f'\n\nIndex0: self.head.prev_node:{self.head.prev_node} data:{data} self.head:{self.head}')
+            self.head = new_node
+        elif index == self.size - 1:
+            self.tail.next_node = Node(self.tail, None, data)
+            self.tail = self.tail.next_node
+        else:
+            current_node.prev_node.next_node = Node(current_node.prev_node, current_node.next_node, data)
+            current_node.next_node.prev_node = current_node.prev_node.next_node
         self.size += 1
-        _current_node.prev_node.next_node = Node(_current_node.prev_node,_current_node.next_node, data)
-        _current_node.next_node.prev_node = ref(_current_node.prev_node.next_node)
 
 
     def append(self, data):
+        """
+        добавляет новую ноду с данными
+        """
         new_node = Node(data=data)
         if self.size == 0:
             self.head = new_node
             self.tail = new_node
-            self.size += 1
         else:
             self.tail.next_node = new_node
-            new_node.prev_node = ref(self.tail)
+            new_node.prev_node = self.tail
             self.tail = new_node
-            self.size += 1
+
+        self.size += 1
 
 
     def find(self, node):
+        """
+        выдает индекс ноды переданную параметром
+        """
         _current_node: Node = ll.head
         i = 0
         while i < self.size:
@@ -112,19 +139,70 @@ class LinkedList:
             _current_node = _current_node.next_node
             i += 1
 
+
     def remove(self, node):
-        ...
+        """
+        удаляет ноду переданную параметром
+        """
+        _current_node: Node = self.head
+        i = 0
+
+        while i < self.size:
+            if _current_node == node:
+                # НЕ последний элемент
+                if _current_node.next_node:
+                    _current_node.next_node.prev_node = _current_node.prev_node
+                else:
+                    ll.tail = _current_node.prev_node
+                # НЕ первый элемент
+                if _current_node.prev_node:
+                    _current_node.prev_node.next_node = _current_node.next_node
+                else:
+                    ll.head = _current_node.next_node
+                self.size -= 1
+
+                # нужно ли очищать удаляемую ноду ??
+                _current_node.data = None
+                _current_node.prev_node = None
+                _current_node.next_node = None
+                print(f'remove(self, {node})  COMLETE')
+                return
+            _current_node = _current_node.next_node
+            i += 1
+        print(f'remove data:{node.data}(self, {node})  Not COMLETE ')
+
+
 
     def delete(self, index):
-        _current_node: Node = ll.head
+        """
+        удаляет ноду с заданным в параметрах индексом
+        """
+        _current_node: Node = self.head
         i = 0
         if index > self.size:
             raise IndexError('index more then len')
-        while i < index:
+        while i < index - 1:
             _current_node = _current_node.next_node
             i += 1
-        _current_node.next_node.prev_node = ref(_current_node.prev_node)
-        _current_node.prev_node.next_node = _current_node.next_node
+        # НЕ последний элемент
+        if _current_node.next_node:
+            _current_node.next_node.prev_node = _current_node.prev_node
+        else:
+            ll.tail = _current_node.prev_node
+        # НЕ первый элемент
+        if _current_node.prev_node:
+            _current_node.prev_node.next_node = _current_node.next_node
+        else:
+            ll.head = _current_node.next_node
+        self.size -= 1
+
+        # нужно ли очищать удаляемую ноду ??
+        _current_node.data = None
+        _current_node.prev_node = None
+        _current_node.next_node = None
+        print(f'delete(self, {index})  COMLETE')
+
+
 
 
     def set_structure_driver(self, stucture_driver):
@@ -137,10 +215,15 @@ class LinkedList:
         save_dict = {}
         # print('save list:')
         while i < self.size:
-            save_dict[id(_current_node)] = {
-                                            'data': _current_node.data ,
-                                            'prev': id(_current_node.prev_node_) if _current_node.prev_node_ else None,
-                                            'next': id(_current_node.next_node_) if _current_node.next_node_ else None
+            # save_dict[id(_current_node)] = {
+            #                                 'data': _current_node.data,
+            #                                 'prev': id(_current_node.prev_node_) if _current_node.prev_node_ else None,
+            #                                 'next': id(_current_node.next_node_) if _current_node.next_node_ else None
+            #                                 }
+            save_dict[i] = {
+                                            'data': _current_node.data,
+                                            'prev': i - 1 if _current_node.prev_node_ else None,
+                                            'next': i + 1 if _current_node.next_node_ else None
                                             }
             # print(f'dict: {save_dict}')
             _current_node = _current_node.next_node
@@ -158,48 +241,36 @@ class LinkedList:
         self.size = 0
 
     def load(self):
-        load_dict = {}
         if isinstance(self.__structure_driver, IStuctureDriver):
             load_dict = self.__structure_driver.read()
         else:
             raise TypeError('Err "structure_driver" must be IStuctureDriver')
 
-        self.clear #метод очистки должен быть реализован
+        # метод очистки должен быть реализован
+        self.clean()
 
-
-        # i = 0
-        # while True:
-        #     if len(load_dict) == i:
-        #         return
-        #     print(load_dict[i]['prev'])
-        #     i += 1
         i = 0
+
         for node in load_dict.items():
-            if node[1]['prev'] == None:
-                current_node = node
-                print(f'i:  {i} \tnode : {node}')
-                break
+            print(f'NSi:  {i} \tnode : {node} ')
+        for node in sorted(load_dict.items()):
+            print(f'i:  {i} \tnode : {node}')
+            self.append(node[1]['data'])
+            # if i == 0:
+            #     self.append(node[1]['data'])
+            # else:
+            #     self.append(node[1]['data'], node[1]['data'] )
+
             i += 1
-            # print(f'i:  {i} \tnode : {node}l curr:{current_node}')
-
-        self.append(current_node[data])
-        while True:
-            current_node = load_dict[]
-            проходим последовательно
-
-
-
-        print(f'res load_2: {load_dict}; ')
+        print(f'load(self) Complete, load: {i+1} Node ')
 
 
 
 
-            
-        
-        # if index < 0:
-        #     ...
-        #
-        
+#   ##########################################################
+#   ##########################################################
+#   ##########################################################
+#   ##########################################################
             
 ll = LinkedList()
 
@@ -207,11 +278,12 @@ ll = LinkedList()
 # ll.insert_node(1, 'Python')
 
 ll.append("Привет")
-# print(f'id:{id(ll.head)},  data:{ll.head.data};  \t\tnext:{ll.head.next_node},  \tprev:{ll.head.prev_node}')
 ll.append("Python")
 ll.append("Foo")
 ll.append("Bar")
-
+ll.append("PredLast")
+ll.append("Last")
+# del_test_node = Node('Last22')
 #
 # i = 0
 # current_node: Node = ll.head
@@ -221,9 +293,55 @@ ll.append("Bar")
 #     i += 1
 #
 ll.set_structure_driver(JSONFileDriver('PU200json.txt'))
-# print(ll.save())
 
+
+print(f'\nLL size:{ll.size} head:{ll.head} tail:{ll.tail}')
+i = 0
+current_node: Node = ll.head
+while i < ll.size:
+    if i == ll.size - 1:
+        del_node = current_node
+    print(f'{i} id:{id(current_node)},  data:{current_node.data},  \tprev:{current_node.prev_node};  \t\tnext:{current_node.next_node}')
+    # print(f'type pref:{type(current_node.prev_node)}')
+    current_node = current_node.next_node
+
+        # print(f'DelNode: {del_node}')
+    i += 1
+
+# ll.save()    # work
+# ll.delete(2)  # work
+# ll.clean()    # work
+ll.remove(del_node) # work
+
+
+print('\nLoad ...')
 ll.load()
+
+# ll.delete(0)  # work
+# ll.delete(ll.size)  # work
+# ll.delete(ll.size)  # work
+
+ll.insert_node(0, 'test00')     #work
+ll.insert_node(1, 'test00')     #work
+ll.insert_node(ll.size - 1, 'test333')      #work -- its last
+
+print(f'\nAfter delete/load; size:{ll.size} head:{ll.head} tail:{ll.tail}')
+i = 0
+current_node: Node = ll.head
+while i < ll.size:
+    print(f'{i} id:{id(current_node)},  data:{current_node.data},  \tprev:{current_node.prev_node};  \t\tnext:{current_node.next_node}')
+    # print(f'type pref:{type(current_node.prev_node)} type node:{type(current_node)}')
+    current_node = current_node.next_node
+    i += 1
+
+
+
+"""
+Вопросы:
+1. ll.remove(del_node) - можно через данные реализовать или таки через Ноду ???
+2. Можно верить последовательности из сохранения или нужно проверял next/prev from save
+3. Нужно очищать содержимое при удалении ??
+"""
 
 
 """
