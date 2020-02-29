@@ -3,7 +3,7 @@ import json
 
 
 """
-Лабораторная работа № 3 (4 ак.ч.)
+Лабораторная работа № 3 
 февраль 2020
 Пантелеев А.В.
 """
@@ -33,6 +33,19 @@ class JSONFileDriver(IStuctureDriver):
             dct = json.load(fp)
         return dct
 
+
+class Subject():
+    def add_observer(self):
+        ...
+
+
+class Data(Subject):
+    ...
+
+
+class Observer:
+    def update(self):
+        ...
 
 
 class Node:
@@ -72,7 +85,7 @@ class Node:
         self.next_node_ = value
 
 
-class LinkedList:
+class LinkedList(Observer):
 
     def __init__(self):
         self.size = 0
@@ -100,7 +113,6 @@ class LinkedList:
         if index == 0:
             new_node = Node(None, self.head, data)
             self.head.prev_node = new_node
-            print(f'\n\nIndex0: self.head.prev_node:{self.head.prev_node} data:{data} self.head:{self.head}')
             self.head = new_node
         elif index == self.size - 1:
             self.tail.next_node = Node(self.tail, None, data)
@@ -109,6 +121,7 @@ class LinkedList:
             current_node.prev_node.next_node = Node(current_node.prev_node, current_node.next_node, data)
             current_node.next_node.prev_node = current_node.prev_node.next_node
         self.size += 1
+
 
 
     def append(self, data):
@@ -131,7 +144,7 @@ class LinkedList:
         """
         выдает индекс ноды переданную параметром
         """
-        _current_node: Node = ll.head
+        _current_node: Node = self.head
         i = 0
         while i < self.size:
             if _current_node == node:
@@ -153,12 +166,12 @@ class LinkedList:
                 if _current_node.next_node:
                     _current_node.next_node.prev_node = _current_node.prev_node
                 else:
-                    ll.tail = _current_node.prev_node
+                    self.tail = _current_node.prev_node
                 # НЕ первый элемент
                 if _current_node.prev_node:
                     _current_node.prev_node.next_node = _current_node.next_node
                 else:
-                    ll.head = _current_node.next_node
+                    self.head = _current_node.next_node
                 self.size -= 1
 
                 # нужно ли очищать удаляемую ноду ??
@@ -188,12 +201,12 @@ class LinkedList:
         if _current_node.next_node:
             _current_node.next_node.prev_node = _current_node.prev_node
         else:
-            ll.tail = _current_node.prev_node
+            self.tail = _current_node.prev_node
         # НЕ первый элемент
         if _current_node.prev_node:
             _current_node.prev_node.next_node = _current_node.next_node
         else:
-            ll.head = _current_node.next_node
+            self.head = _current_node.next_node
         self.size -= 1
 
         # нужно ли очищать удаляемую ноду ??
@@ -211,7 +224,7 @@ class LinkedList:
 
     def save(self):
         i = 0
-        _current_node: Node = ll.head
+        _current_node: Node = self.head
         save_dict = {}
         # print('save list:')
         while i < self.size:
@@ -252,7 +265,7 @@ class LinkedList:
         i = 0
 
         for node in load_dict.items():
-            print(f'NSi:  {i} \tnode : {node} ')
+            print(f"ns:  {i} index:{node[0]} \tnode : {node} ")
         for node in sorted(load_dict.items()):
             print(f'i:  {i} \tnode : {node}')
             self.append(node[1]['data'])
@@ -296,22 +309,22 @@ ll.set_structure_driver(JSONFileDriver('PU200json.txt'))
 
 
 print(f'\nLL size:{ll.size} head:{ll.head} tail:{ll.tail}')
-i = 0
-current_node: Node = ll.head
-while i < ll.size:
-    if i == ll.size - 1:
-        del_node = current_node
-    print(f'{i} id:{id(current_node)},  data:{current_node.data},  \tprev:{current_node.prev_node};  \t\tnext:{current_node.next_node}')
+ii = 0
+test_current_node: Node = ll.head
+while ii < ll.size:
+    if ii == ll.size - 1:
+        del_node = test_current_node
+    print(f'{ii} id:{id(test_current_node)},  data:{test_current_node.data},  \tprev:{test_current_node.prev_node};  \t\tnext:{test_current_node.next_node}')
     # print(f'type pref:{type(current_node.prev_node)}')
-    current_node = current_node.next_node
+    test_current_node = test_current_node.next_node
 
         # print(f'DelNode: {del_node}')
-    i += 1
+    ii += 1
 
-# ll.save()    # work
-# ll.delete(2)  # work
-# ll.clean()    # work
-ll.remove(del_node) # work
+# ll.save()             # work
+# ll.delete(2)          # work
+# ll.clean()            # work
+ll.remove(del_node)     # work
 
 
 print('\nLoad ...')
@@ -322,17 +335,17 @@ ll.load()
 # ll.delete(ll.size)  # work
 
 ll.insert_node(0, 'test00')     #work
-ll.insert_node(1, 'test00')     #work
+# ll.insert_node(1, 'test00')     #work
 ll.insert_node(ll.size - 1, 'test333')      #work -- its last
 
 print(f'\nAfter delete/load; size:{ll.size} head:{ll.head} tail:{ll.tail}')
-i = 0
-current_node: Node = ll.head
-while i < ll.size:
-    print(f'{i} id:{id(current_node)},  data:{current_node.data},  \tprev:{current_node.prev_node};  \t\tnext:{current_node.next_node}')
+ii = 0
+test_current_node: Node = ll.head
+while ii < ll.size:
+    print(f'{ii} id:{id(test_current_node)},  data:{test_current_node.data},  \tprev:{test_current_node.prev_node};  \t\tnext:{test_current_node.next_node}')
     # print(f'type pref:{type(current_node.prev_node)} type node:{type(current_node)}')
-    current_node = current_node.next_node
-    i += 1
+    test_current_node = test_current_node.next_node
+    ii += 1
 
 
 
@@ -355,7 +368,6 @@ LinkedList.load. В этих методах сделайте преобразо�
 результате будет следующая диаграмма классов. Код IStructureDriver и всех наследников
 не меняется.
 """
-
 
 
         
